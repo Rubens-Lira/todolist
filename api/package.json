@@ -1,0 +1,23 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "stat": "node .",
+    "dev": "node --watch .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rubens",
+  "license": "ISC",
+  "dependencies": {
+    "@tsconfig/node16": "^16.1.3",
+    "dotenv": "^16.4.7",
+    "editorconfig": "^2.0.1",
+    "express": "^4.21.2",
+    "pg": "^8.14.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7",
+    "typescript": "^5.8.2"
+  }
+}
