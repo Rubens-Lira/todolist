@@ -1,3 +1,0 @@
-
-
-// const sequelize = new Sequelize()
