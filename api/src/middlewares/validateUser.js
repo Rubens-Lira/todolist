@@ -1,14 +1,24 @@
-import { emailIsValid, phoneIsValid } from "../../utils/index.js";
-import { User } from "../../models/index.js";
+import { emailIsValid, phoneIsValid } from "../utils/index.js";
+import { User } from "../models/User.js";
+import logger from "../utils/logger.js";
 
 export const validateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name, email, phone, password, password_2 } = req.body;
 
-    let userExists = null
+    if (id && req.user.id !== id) {
+      logger.warn(
+        `Tentativa de edição não autorizada | Usuário: ${req.user.id} tentou editar o usuário ${id} | IP: ${req.ip}`
+      );
+      return res
+        .status(403)
+        .json({ error: "Você não tem permissão para editar este usuário" });
+    }
+
+    let userExists = null;
     if (id) {
-      userExists = await User.findByPk(id)
+      userExists = await User.findByPk(id);
       if (!userExists) {
         return res.status(400).json({ error: "Usuário não encontrado" });
       }
@@ -48,6 +58,7 @@ export const validateUser = async (req, res, next) => {
     req.userExists = userExists;
     next();
   } catch (error) {
+    logger.error(error)
     return res.status(500).json({ message: "Erro na validação do usuário" });
   }
 };
