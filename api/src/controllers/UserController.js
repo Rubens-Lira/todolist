@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
-import { User } from "../../models/index.js";
+import { User } from "../models/User.js";
+import logger from "../utils/logger.js";
 
 class UserController {
   async index(req, res) {
@@ -9,7 +10,8 @@ class UserController {
       });
       res.status(200).json(users);
     } catch (error) {
-      console.log(error);
+      logger.error(error);
+      res.status(500).json({ message: "Erro ao buscar usuários" });
     }
   }
 
@@ -19,9 +21,13 @@ class UserController {
       const user = await User.findByPk(id, {
         attributes: ["id", "name", "email", "phone", "createdAt", "updatedAt"],
       });
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
       res.status(200).json(user);
     } catch (error) {
-      return res.status(404).json({ message: "Usuário não encontrado" });
+      logger.error(error);
+      res.status(500).json({ message: "Erro ao buscar o usuário" });
     }
   }
 
@@ -45,39 +51,39 @@ class UserController {
         phone: user.phone,
       });
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Erro ao criar o usuário" });
+      logger.error(error);
+      res.status(500).json({ message: "Erro ao criar o usuário" });
     }
   }
 
   async update(req, res) {
     try {
       const { name, email, phone, password } = req.body;
-      const userExists = req.userExists
+      const userExists = req.userExists;
 
       let hashedPassword = userExists.password;
       if (password) {
         hashedPassword = await bcrypt.hash(password, 10);
       }
 
-      Object.assign(userExists, {
-        name,
-        email,
-        phone,
-        password: hashedPassword,
+      await User.update(
+        {
+          name,
+          email,
+          phone,
+          password: hashedPassword,
+        },
+        { where: { id: userExists.id } }
+      );
+
+      const updatedUser = await User.findByPk(userExists.id, {
+        attributes: ["id", "name", "email", "phone"],
       });
 
-      await userExists.save();
-
-      res.status(201).json({
-        id: userExists.id,
-        name: userExists.name,
-        email: userExists.email,
-        phone: userExists.phone,
-      });
+      res.status(200).json(updatedUser);
     } catch (error) {
-      console.error(error);
-      return res
+      logger.error(error);
+      res
         .status(500)
         .json({ message: "Erro ao atualizar o usuário", error: error.message });
     }
@@ -87,20 +93,16 @@ class UserController {
     try {
       const { id } = req.params;
 
-      const userExists = await User.count({ where: id });
-
-      if (!userExists) {
+      const user = await User.findByPk(id);
+      if (!user) {
         return res.status(400).json({ error: "Usuário não encontrado" });
       }
 
-      userExists.destroy({
-        where: {
-          id,
-        },
-      });
+      await user.destroy();
       res.sendStatus(204);
     } catch (error) {
-      return res
+      logger.error(error);
+      res
         .status(500)
         .json({ message: "Erro ao deletar o usuário", error: error.message });
     }
