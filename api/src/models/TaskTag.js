@@ -1,24 +1,25 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/index.js";
 
-const Tag = sequelize.define(
-  "Tag",
+const TaskTag = sequelize.define(
+  "TaskTag",
   {
-    id: {
+    taskId: {
       type: DataTypes.UUID,
+      allowNull: false,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
+      references: {
+        model: "tasks",
+        key: "id",
+      },
+      onDelete: "CASCADE",
     },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    color: DataTypes.STRING,
-    userId: {
+    tagId: {
       type: DataTypes.UUID,
       allowNull: false,
+      primaryKey: true,
       references: {
-        model: "users",
+        model: "tags",
         key: "id",
       },
       onDelete: "CASCADE",
@@ -26,9 +27,9 @@ const Tag = sequelize.define(
   },
   {
     freezeTableName: true,
-    tableName: "tags",
+    tableName: "tasktags",
     timestamps: false,
   }
 );
 
-export default Tag;
+export default TaskTag;

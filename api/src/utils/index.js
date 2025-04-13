@@ -1,3 +1,5 @@
+import { validate as uuidValidate } from "uuid";
+
 export function formatFullDate(date) {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -17,4 +19,21 @@ export function emailIsValid(email) {
 export function phoneIsValid(phone) {
   const regex = /^\d{10,11}$/;
   return regex.test(phone);
+}
+
+export function colorIsValid(color) {
+  const regex = /^#?[0-9A-Fa-f]{6}$/
+  return regex.test(color)
+}
+
+export function schemeIsValid(scheme){
+  const regex = /^Bearer$/i
+  return regex.test(scheme)
+}
+
+export function uuidIsValids(uudis) {
+  if (!Array.isArray(uudis) || uudis.length === 0) return []
+
+  const valids = [...new Set(uudis.filter((id) => uuidValidate(id)))]
+  return valids
 }

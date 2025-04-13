@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/index.js";
-import { v4 as uuidv4 } from "uuid";
 import { formatFullDate } from "../utils/index.js";
 
 const User = sequelize.define(
@@ -8,7 +7,7 @@ const User = sequelize.define(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: uuidv4,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
     name: {
@@ -43,12 +42,10 @@ const User = sequelize.define(
     timestamps: false,
     hooks: {
       beforeUpdate: (user) => {
-        user.updatedAt = formatFullDate(new Date())
-      }
-    }
+        user.updatedAt = formatFullDate(new Date());
+      },
+    },
   }
 );
 
-(async () => await sequelize.sync({ force: false }))();
-
-export { User };
+export default User;

@@ -7,11 +7,10 @@ const Task = sequelize.define(
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
-      defaultValue: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
     },
     title: {
       type: DataTypes.STRING,
-      unique: true,
       allowNull: false,
     },
     status: {
@@ -35,21 +34,12 @@ const Task = sequelize.define(
       },
       onDelete: "CASCADE",
     },
-    tagId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "tags",
-        key: "id",
-      },
-      onDelete: "CASCADE",
-    },
   },
   {
     freezeTableName: true,
-    tableName: "tags",
+    tableName: "tasks",
     timestamps: false,
   }
 );
 
-export default Task
+export default Task;

@@ -1,16 +1,16 @@
-import "dotenv/config"
-import express from "express"
-import errorHandlerMidleWare from "./middlewares/errorHandlerMidleware.js"
-import routes from "./routes/authRoutes.js"
-import publicRoutes from "./routes/publicRoutes.js"
+import "dotenv/config";
+import express from "express";
+import routes from "./routes/index.js";
+import { sequelize } from "./models/index.js";
+import "./models/associations.js"
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+sequelize.sync({ force: false });
 
-app.use("/api", publicRoutes);       
-app.use("/api/auth", routes);         
+app.use(express.json());
+app.use(routes);
 
-app.use(errorHandlerMidleWare)
-
-app.listen(process.env.PORT, () => console.log(`Server iniciado em http://localhost:${process.env.PORT}/api`))
+app.listen(process.env.PORT, () =>
+  console.log(`Server iniciado em http://localhost:${process.env.PORT}`)
+);

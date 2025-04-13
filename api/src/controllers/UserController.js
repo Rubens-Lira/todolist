@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { User } from "../models/User.js";
+import User from "../models/User.js";
 import logger from "../utils/logger.js";
 
 class UserController {
@@ -15,20 +15,8 @@ class UserController {
     }
   }
 
-  async show(req, res) {
-    try {
-      const { id } = req.params;
-      const user = await User.findByPk(id, {
-        attributes: ["id", "name", "email", "phone", "createdAt", "updatedAt"],
-      });
-      if (!user) {
-        return res.status(404).json({ message: "Usuário não encontrado" });
-      }
-      res.status(200).json(user);
-    } catch (error) {
-      logger.error(error);
-      res.status(500).json({ message: "Erro ao buscar o usuário" });
-    }
+  show(req, res) {
+    res.status(200).json(req.userExists);
   }
 
   async create(req, res) {
@@ -68,7 +56,7 @@ class UserController {
 
       await User.update(
         {
-          name,
+          name: name.trim(),
           email,
           phone,
           password: hashedPassword,
@@ -91,15 +79,10 @@ class UserController {
 
   async delete(req, res) {
     try {
-      const { id } = req.params;
-
-      const user = await User.findByPk(id);
-      if (!user) {
-        return res.status(400).json({ error: "Usuário não encontrado" });
-      }
+      const user = req.userExists;
 
       await user.destroy();
-      res.sendStatus(204);
+      res.status(204).end();
     } catch (error) {
       logger.error(error);
       res
