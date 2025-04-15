@@ -2,12 +2,14 @@ import "dotenv/config";
 import express from "express";
 import routes from "./routes/index.js";
 import { sequelize } from "./models/index.js";
-import "./models/associations.js"
+import cors from "cors";
+import "./models/associations.js";
 
 const app = express();
 
 sequelize.sync({ force: false });
 
+app.use(cors());
 app.use(express.json());
 app.use(routes);
 

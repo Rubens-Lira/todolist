@@ -1,7 +1,8 @@
+// src/pages/Auth/Register.jsx
 import { useState } from "react";
-import { UserForm } from "../../";
+import { useNavigate } from "react-router-dom";
+import { UserForm } from "../../"; // certifique-se do caminho correto
 import UserService from "../../../services/UserService";
-import { useNavigate } from "react-router-dom";  
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function Register() {
     password: "",
     password_2: "",
   });
+
   const navigate = useNavigate();
 
   const inputs = [
@@ -28,24 +30,20 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { password, password_2, ...userData } = formData;
+
+    if (password !== password_2) {
+      return alert("As senhas não coincidem");
+    }
+
     try {
-      const { password_2, ...userData } = formData;
-
-      if (formData.password !== password_2) {
-        alert("As senhas não coincidem");
-        return;
-      }
-
-      const response = await UserService.createUser(userData);
+      await UserService.createUser({ ...userData, password });
       alert("Usuário cadastrado com sucesso!");
-
-      
-      navigate("/login"); 
-
-      console.log(response);
+      navigate("/login");
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
-      alert(error.response?.data?.message || "Erro ao cadastrar.");
+      alert(error?.response?.data?.error || "Erro ao cadastrar.");
     }
   };
 

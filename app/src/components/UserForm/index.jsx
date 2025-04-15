@@ -1,16 +1,25 @@
 import styles from "./style.module.css";
 import { Button, FormGroup, Input } from "../";
 
-export default function UserForm({ title, buttonLabel, inputs }) {
+export default function UserForm({ title, buttonLabel, inputs, values, onChange, onSubmit }) {
   return (
-    <form className={styles.form}>
+    <form className={styles.form} onSubmit={onSubmit}>
       <h2>{title}</h2>
-      {inputs.map((key) => (
-        <FormGroup key={key.name}>
-          <Input type={key.type ?? "text"} name={key.name} placeholder={key.label} />
+
+      {inputs.map((input) => (
+        <FormGroup key={input.name}>
+          <Input
+            type={input.type ?? "text"}
+            name={input.name}
+            placeholder={input.label}
+            value={values[input.name] || ""}
+            onChange={onChange}
+            required
+          />
         </FormGroup>
       ))}
-      <Button>{buttonLabel}</Button>
+
+      <Button type="submit">{buttonLabel}</Button>
     </form>
   );
 }
